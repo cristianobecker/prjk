@@ -1,48 +1,81 @@
 #!/bin/bash
 
 # variables
-UP=$'\033[A'
-DOWN=$'\033[B'
-COMMAND='prjk'
+
+WHILE_HANDLER=0
+
 
 # functions
-display_options() {
-    SELECTED=0
 
-    enter_fullscreen
-    display_options_with_selected 0
+_prjk_alias() {
+    local COMMAND='prjk'
+    local FOLDER=`cd $2 && pwd`
+    echo "alias $1=\". $COMMAND go $FOLDER\""
+}
 
-    trap handle_sigint INT
-    trap handle_sigtstp SIGTSTP
+_prjk_find() {
+    if test $# -eq 2; then
+        _prjk_filter $1 $2
+        if test ${#LIST[@]} -gt 1; then
+            _prjk_options $1
+        elif test ${#LIST[@]} -eq 1; then
+            _prjk_unset
+            cd "$1/${LIST[0]}"
+        fi
+    else        
+        _prjk_unset
+        cd $1
+    fi
+}
 
-    while true; do
+_prjk_help() {
+    echo 'help'
+}
+
+_prjk_options() {
+    _prjk_fullscreen
+    _prjk_select 0
+
+    trap _prjk_sigint INT
+    trap _prjk_sigtstp SIGTSTP
+
+    WHILE_HANDLER=0
+    local UP=$'\033[A'
+    local DOWN=$'\033[B'
+    local SELECTED=0
+    
+    while test $WHILE_HANDLER -eq 0; do
         read -n 3 c
-        case "$c" in
+        case $c in
             $UP)
                 clear
-                local next=`expr $SELECTED - 1`
-                display_options_with_selected $next
-		;;
+                let SELECTED=`expr $SELECTED - 1`
+                _prjk_select $SELECTED
+	    	    ;;
             $DOWN)
                 clear
-                local next=`expr $SELECTED + 1`
-                display_options_with_selected $next
+                let SELECTED=`expr $SELECTED + 1`
+                _prjk_select $SELECTED
                 ;;
             *)
-                leave_fullscreen
-                exit
+                _prjk_leave
+                WHILE_HANDLER=1
                 ;;
         esac
     done
+    
+    if test $WHILE_HANDLER -eq 1; then 
+        _prjk_unset
+        cd "$1/${LIST[$SELECTED]}"
+    fi
 }
 
-display_options_with_selected() {
+_prjk_select() {
     echo $1
     local n=0
     for folder in ${LIST[@]}; do
         if test $n -eq $1; then
             printf "  \033[36mο\033[0m $folder\033[0m\n"
-	    SELECTED=$1
         else
             printf "    \033[90m$folder\033[0m\n"
         fi
@@ -51,60 +84,57 @@ display_options_with_selected() {
     echo
 }
 
-filter_result() {
-    LIST=( $(ls $1 | egrep $2) )
+_prjk_filter() {
+    IFS='
+'
+    LIST=(`ls -1 $1 | egrep -i $2`)
 }
 
-enter_fullscreen() {
+_prjk_fullscreen() {
     tput smcup
     stty -echo
 }
 
-handle_sigint() {
-    leave_fullscreen
-    exit $?
-}
-
-handle_sigtstp() {
-    leave_fullscreen
-    kill -s SIGSTOP $$
-}
-
-leave_fullscreen() {
+_prjk_leave() {
     tput rmcup
     stty echo 
 }
 
-create_alias() {
-    cat <<EOF
-$1() {
-    if test \$# -eq 0; then cd $2;
-    else cd \$($COMMAND go $2 \$1); fi
-}
-EOF
+_prjk_sigint() {
+    _prjk_leave
+    WHILE_HANDLER=2
 }
 
-go_to_path() {
-    if test $# -eq 2; then
-        filter_result $1 $2
-        if test ${#LIST[@]} -gt 1; then
-            display_options
-            sleep 1
-            echo 'hello'
-            echo "$1/$SELECTED"
-        elif test ${#LIST[@]} -eq 1; then
-            echo "$1/${LIST[0]}"
-        fi
-    else        
-        echo $1
-    fi
+_prjk_sigtstp() {
+    _prjk_leave
+    _prjk_unset
+    kill -s SIGSTOP $$
 }
+
+_prjk_unset() {
+    unset _prjk_filter
+    unset _prjk_find
+    unset _prjk_help
+    unset _prjk_options
+    unset _prjk_sigint
+    unset _prjk_sigtstp
+    unset _prjk_alias
+    unset _prjk_fullscreen
+    unset _prjk_leave
+    unset _prjk_select
+    unset _prjk_unset
+    
+    unset IFS
+    unset WHILE_HANDLER
+}
+
 
 # handle arguments
+
 if test $# -gt 0; then
     case $1 in
-        create|alias) create_alias $2 $3;;
-        go) go_to_path $2 $3;;
-        help) echo 'show help';;
+        create|alias) _prjk_alias $2 $3 ;;
+        go|find) _prjk_find $2 $3 ;;
+        help) _prjk_help ;;
     esac
 fi 

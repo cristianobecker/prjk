@@ -1,0 +1,5 @@
+select only when ENTER is pressed
+highlight the part of folder which matches with the search
+unset LIST variable
+try to stop 'read' instruction when 'ctrl+c'
+create issues
