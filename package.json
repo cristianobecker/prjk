@@ -1,0 +1,29 @@
+{
+  "name": "prjk",
+  "version": "0.0.2",
+  "description": "Simple way to navigate in a project's folder via command line",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cristianobecker/prjk.git"
+  },
+  "keywords": [
+    "productivity",
+    "bash",
+    "folder",
+    "projects"
+  ],
+  "author": "Cristiano Becker <cristianobecker@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cristianobecker/prjk/issues"
+  },
+  "homepage": "https://github.com/cristianobecker/prjk",
+  "preferGlobal": true,
+  "bin": {
+    "prjk": "./bin/prjk.sh"
+  },
+  "os": [
+    "!win32"
+  ]
+}

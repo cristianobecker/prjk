@@ -10,7 +10,9 @@ WHILE_HANDLER=0
 _prjk_alias() {
     local COMMAND='prjk'
     local FOLDER=`cd $2 && pwd`
-    echo "alias $1=\". $COMMAND go $FOLDER\""
+    
+    echo "alias $1=\". $COMMAND go $FOLDER\"" >> ~/.bash_profile
+    source ~/.bash_profile
 }
 
 _prjk_find() {
@@ -85,8 +87,7 @@ _prjk_select() {
 }
 
 _prjk_filter() {
-    IFS='
-'
+    IFS=$'\n'
     LIST=(`ls -1 $1 | egrep -i $2`)
 }
 
