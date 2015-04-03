@@ -12,10 +12,10 @@ Configure
 
 To create a alias in your .bash_profile:
 ```bash
-. prjk alias myfolder ~/test-folder
+. prjk alias myfolder ~/test-folder # the dot is necessary
 ```
 
-It will create an alias in yout ~/.bash_profile
+It will create an alias in your ~/.bash_profile
 
 
 To run your recently created alias:

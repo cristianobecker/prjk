@@ -13,6 +13,8 @@ _prjk_alias() {
     
     echo "alias $1=\". $COMMAND go $FOLDER\"" >> ~/.bash_profile
     source ~/.bash_profile
+    
+    _prjk_unset
 }
 
 _prjk_find() {
