@@ -1,33 +1,26 @@
 Installation
 ---
 
-Run this command in terminal:
+Install via npm:
 ```bash
-make install
+npm install -g prjk
 ```
 
-It will create the tests folder and the global reference to the command
 
-
-Test 
+Configure 
 ---
 
-To create a alias in your .bash_profile (future use):
+To create a alias in your .bash_profile:
 ```bash
-prjk alias myfolder test-folder # >> ~/.bash_profile && source ~/.bash_profile
+. prjk alias myfolder test-folder
 ```
 
-To navigate in your project's folder:
-```bash
-prjk go test-folder 
-prjk go test-folder dif
-prjk go test-folder 1 # will open a menu with options
-```
+It will create an alias in yout ~/.bash_profile
 
-In future, the command will be used through the alias:
+
+To run your recently created alias:
 ```bash
 myfolder # to go to the respective project's folder
 myfolder search # to go to the folder that matches with the "search" string
 ```
 
-PS: today, this script only outputs the destiny folder. The "change directory" feature will be added in future.
