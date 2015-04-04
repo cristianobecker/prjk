@@ -20,7 +20,9 @@ It will create an alias in your ~/.bash_profile
 
 To run your recently created alias:
 ```bash
-myfolder # to go to the respective project's folder
-myfolder search # to go to the folder that matches with the "search" string
+myfolder         # to go to the respective project's folder
+myfolder .       # to list all folders
+myfolder [abc]   # to list folders that have a, b or c in name
+myfolder abc     # to list folders that have 'abc' in name
 ```
 

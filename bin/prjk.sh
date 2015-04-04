@@ -85,7 +85,7 @@ _prjk_select() {
 _prjk_filter() {
     local oldifs="$IFS"
     IFS=$'\n'
-    LIST=(`ls -1 $1 | egrep -i $2`)
+    LIST=(`cd $1 && ls -1d */ | egrep -i $2`)
     IFS="$oldifs"
 }
 
