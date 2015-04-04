@@ -85,10 +85,10 @@ _prjk_select() {
 }
 
 _prjk_filter() {
-    local oldifs="$IFS"
+    OLDIFS="$IFS"
     IFS=$'\n'
+
     LIST=(`cd $1 && ls -1d */ | egrep -i $2`)
-    IFS="$oldifs"
 }
 
 _prjk_cd() {
@@ -133,6 +133,10 @@ _prjk_unset() {
     unset _prjk_unset
    
     unset LIST 
+    if test -n "$OLDIFS"; then
+        IFS="$OLDIFS"
+        unset OLDIFS
+    fi
 }
 
 
