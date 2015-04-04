@@ -2,8 +2,10 @@
 
 _prjk_alias() {
     local folder=`cd $2 && pwd`
-    
-    echo "alias $1=\". prjk go $folder\"" >> ~/.bash_profile
+    local file=~/.bash_profile
+    test -e ~/.bashrc && file=~/.bashrc
+
+    echo "alias $1=\". prjk go $folder\"" >> $file
     source ~/.bash_profile
     
     _prjk_unset

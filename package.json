@@ -1,6 +1,6 @@
 {
   "name": "prjk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple way to navigate in a project's folder via command line",
   "main": "index.js",
   "repository": {
