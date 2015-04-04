@@ -1,8 +1,5 @@
-select only folders (ls -d */)
 select only when ENTER is pressed
 highlight the part of folder which matches with the search
-consider remove the fullscreen mode
 help
-unset LIST variable
 try to stop 'read' instruction when 'ctrl+c'
 create issues

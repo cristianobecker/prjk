@@ -97,7 +97,7 @@ _prjk_cd() {
 
     echo "cd $1"
     
-    cd $1 
+    cd "$1" 
 }
 
 _prjk_fullscreen() {
