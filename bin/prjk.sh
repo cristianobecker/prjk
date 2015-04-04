@@ -105,6 +105,7 @@ _prjk_leave() {
 
 _prjk_sigint() {
     _prjk_leave
+    trap - INT
     WHILE_HANDLER=2
 }
 
