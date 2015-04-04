@@ -6,7 +6,7 @@ _prjk_alias() {
     test -e ~/.bashrc && file=~/.bashrc
 
     echo "alias $1=\". prjk go $folder\"" >> $file
-    source ~/.bash_profile
+    source $file
     
     _prjk_unset
 }
