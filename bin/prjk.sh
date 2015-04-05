@@ -88,7 +88,7 @@ _prjk_filter() {
     OLDIFS="$IFS"
     IFS=$'\n'
 
-    LIST=(`cd $1 && ls -1d */ | egrep -i $2 | head -n 10`)
+    LIST=(`cd $1 && ls -1d */ | egrep -i $2 | head -n 20`)
 }
 
 _prjk_cd() {

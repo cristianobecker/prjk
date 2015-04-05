@@ -21,7 +21,7 @@ It will create an alias in your ~/.bash_profile
 To run your recently created alias:
 ```bash
 myfolder         # to go to the respective projects' folder
-myfolder .       # to list all folders
+myfolder .       # to list all folders (limited in 20 results)
 myfolder [abc]   # to list folders that have a, b or c in name
 myfolder abc     # to list folders that have 'abc' in name
 ```
