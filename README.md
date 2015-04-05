@@ -10,7 +10,7 @@ npm install -g prjk
 Configure 
 ---
 
-To create a alias in your .bash_profile:
+To create an alias in your .bash_profile:
 ```bash
 . prjk alias myfolder ~/test-folder # the dot is necessary
 ```
