@@ -1,6 +1,6 @@
 {
   "name": "prjk",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Using shell alias to make navigation in the file system easier",
   "main": "index.js",
   "repository": {

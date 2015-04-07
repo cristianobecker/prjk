@@ -1,6 +1,6 @@
 About
 ---
-!(prjk usage)[http://cristianobecker.com/static/images/prjk.gif]
+![prjk usage](http://cristianobecker.com/static/images/prjk.gif)
 
 Using shell alias to make navigation in the file system easier. It can be helpful when working in multiple projects in a workspace, since it's faster to type an alias that navigates into a folder instead to type the fullpath
 
