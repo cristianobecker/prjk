@@ -1,7 +1,7 @@
 {
   "name": "prjk",
-  "version": "0.1.7",
-  "description": "Simple way to navigate in a projects' folder via command line",
+  "version": "0.1.8",
+  "description": "Using shell alias to make navigation in the file system easier",
   "main": "index.js",
   "repository": {
     "type": "git",
