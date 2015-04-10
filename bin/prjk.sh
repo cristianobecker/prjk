@@ -18,6 +18,9 @@ _prjk_find() {
             _prjk_options $1
         elif test ${#LIST[@]} -eq 1; then
             _prjk_cd "$1/${LIST[0]}"
+        else 
+            echo 'sub-folder not found'
+            _prjk_unset
         fi
     else        
         _prjk_cd $1
@@ -25,45 +28,72 @@ _prjk_find() {
 }
 
 _prjk_help() {
-    echo 'help'
+    cat <<-EOF
+
+  Usage: . prjk [COMMAND] [args]
+
+  Commands:
+    . prjk alias <name> <folder>     Configure an alias with the specific folder
+    . prjk find <folder> <search>    The command called by the alias. Makes the search
+                                     on folder and show a options menu if necessary
+    prjk help                        Display help information
+
+EOF
     _prjk_unset
 }
 
 _prjk_options() {
     _prjk_fullscreen
     _prjk_select 0
-
-    local up=$'\033[A'
-    local down=$'\033[B'
-    local selected=0
-    local total=${#LIST[@]}
     
-    #trap _prjk_sigint INT
-    trap '' INT
+    local tmpf="/tmp/prjk.temp.$$"
+    mktemp $tmpf >/dev/null
 
-    while read -n 3 c; do
-        case $c in
-            $up)
-                let selected=`expr $selected - 1`
-                if test $selected -lt 0; then let selected=0; fi
-                
-                _prjk_select $selected
-	    	    ;;
-            $down)
-                let selected=`expr $selected + 1`
-                if test `expr $selected + 1` -ge $total; then let selected=`expr $total - 1`; fi
-                
-                _prjk_select $selected
-                ;;
-            *)
-                break
-                ;;
-        esac
-    done
-   
+    (   
+        SELECTED=0        
+        
+        trap _prjk_sigint INT
+
+        while read -rsn1 c; do
+            case $c in
+                $'\x1b')
+                    read -rsn2 -t 1 c2
+                    case $c2 in
+                        "[A") 
+                            SELECTED=`expr $SELECTED - 1`
+                            test $SELECTED -lt 0 && SELECTED=0
+                            ;;
+                        "[B")
+                            SELECTED=`expr $SELECTED + 1`
+                            test `expr $SELECTED + 1` -ge $TOTAL && SELECTED=`expr $TOTAL - 1`
+                            ;;
+                        *)
+                            SELECTED=-1
+                            break ;;
+                    esac
+                    test $SELECTED -ge 0 && _prjk_select $SELECTED 
+                    ;;
+                "")
+                    echo enter
+                    break 
+                    ;;
+                *)
+                    SELECTED=-1
+                    break 
+                    ;;
+            esac
+        done
+
+        echo $SELECTED > $tmpf
+    )
+    
+    local selected=`cat $tmpf || echo -1`
+    rm $tmpf
+
+    
     _prjk_leave
     
-    if test $selected -gt -1; then
+    if test ! -z $selected && test $selected -ge 0; then
         _prjk_cd "$1/${LIST[$selected]}" 
     else 
         echo "cancel"
@@ -81,7 +111,7 @@ _prjk_select() {
         fi
         let n=n+1
     done
-    tput cuu ${#LIST[@]}
+    tput cuu $TOTAL
 }
 
 _prjk_filter() {
@@ -89,14 +119,13 @@ _prjk_filter() {
     IFS=$'\n'
 
     LIST=(`cd $1 && ls -1d */ | egrep -i $2 | head -n 20`)
+    TOTAL=${#LIST[@]}
 }
 
 _prjk_cd() {
-    local list=$LIST
     _prjk_unset
 
     echo "cd $1"
-    
     cd "$1" 
 }
 
@@ -106,15 +135,16 @@ _prjk_fullscreen() {
 }
 
 _prjk_leave() {
-    tput cud ${#LIST[@]}
+    tput cud $TOTAL
     tput cnorm
     stty echo 
 }
 
-#_prjk_sigint() {
-#    _prjk_leave
-#    echo 'sigint'
-#}
+_prjk_sigint() {
+    _prjk_leave
+    _prjk_unset
+    exit
+}
 
 
 _prjk_unset() {
@@ -125,7 +155,7 @@ _prjk_unset() {
     unset _prjk_find
     unset _prjk_help
     unset _prjk_options
-    #unset _prjk_sigint
+    unset _prjk_sigint
     unset _prjk_alias
     unset _prjk_fullscreen
     unset _prjk_leave
@@ -133,6 +163,8 @@ _prjk_unset() {
     unset _prjk_unset
    
     unset LIST 
+    unset TOTAL 
+    
     if test -n "$OLDIFS"; then
         IFS="$OLDIFS"
         unset OLDIFS

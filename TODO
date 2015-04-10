@@ -1,5 +1,3 @@
-select only when ENTER is pressed
 highlight the part of folder which matches with the search
-help
-try to stop 'read' instruction when 'ctrl+c'
+autocomplete
 create issues
