@@ -46,7 +46,7 @@ _prjk_options() {
     _prjk_fullscreen
     _prjk_select 0
     
-    local tmpf="/tmp/prjk.temp.$$"
+    local tmpf="/tmp/prjk.temp.$$.XXXXX"
     mktemp $tmpf >/dev/null
 
     (   
