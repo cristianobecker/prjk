@@ -52,7 +52,7 @@ _prjk_options() {
     (   
         SELECTED=0        
         
-        trap _prjk_sigint INT
+        trap 'exit' INT
 
         while read -rsn1 c; do
             case $c in
@@ -139,13 +139,6 @@ _prjk_leave() {
     tput cnorm
     stty echo 
 }
-
-_prjk_sigint() {
-    _prjk_leave
-    _prjk_unset
-    exit
-}
-
 
 _prjk_unset() {
     trap - INT
