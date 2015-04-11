@@ -14,9 +14,9 @@ _prjk_alias() {
 _prjk_find() {
     if test $# -eq 2; then
         _prjk_filter $1 $2
-        if test ${#LIST[@]} -gt 1; then
+        if test $TOTAL -gt 1; then
             _prjk_options $1
-        elif test ${#LIST[@]} -eq 1; then
+        elif test $TOTAL -eq 1; then
             _prjk_cd "$1/${LIST[0]}"
         else 
             echo 'sub-folder not found'
@@ -49,31 +49,38 @@ _prjk_options() {
     local tmpf=`mktemp "/tmp/prjk.temp.XXXXX"`
 
     (   
+        ENTER=""
+        ARROW=$'\033'
+        UP="[A"
+        DOWN="[B"
+
         SELECTED=0        
         
         trap 'exit' INT
 
         while read -rsn1 c; do
             case $c in
-                $'\x1b')
+                $ARROW)
                     read -rsn2 -t 1 c2
                     case $c2 in
-                        "[A") 
+                        $UP) 
                             SELECTED=`expr $SELECTED - 1`
-                            test $SELECTED -lt 0 && SELECTED=0
                             ;;
-                        "[B")
+                        $DOWN)
                             SELECTED=`expr $SELECTED + 1`
-                            test `expr $SELECTED + 1` -ge $TOTAL && SELECTED=`expr $TOTAL - 1`
                             ;;
                         *)
                             SELECTED=-1
-                            break ;;
+                            break 
+                            ;;
                     esac
+                    
+                    test $SELECTED -lt 0 && SELECTED=0
+                    test `expr $SELECTED + 1` -ge $TOTAL && SELECTED=`expr $TOTAL - 1`
+                    
                     test $SELECTED -ge 0 && _prjk_select $SELECTED 
                     ;;
-                "")
-                    echo enter
+                $ENTER)
                     break 
                     ;;
                 *)
@@ -86,7 +93,7 @@ _prjk_options() {
         echo $SELECTED > $tmpf
     )
     
-    local selected=`cat $tmpf || echo -1`
+    local selected=`cat $tmpf`
     rm $tmpf
 
     
@@ -140,8 +147,6 @@ _prjk_leave() {
 }
 
 _prjk_unset() {
-    trap - INT
-    
     unset _prjk_filter
     unset _prjk_cd
     unset _prjk_find
