@@ -6,14 +6,14 @@
 
 _prjk_alias() {
     # get the absolute path of destiny folder
-    local folder=`cd $2 && pwd`
+    local folder=$(cd "$2" && pwd)
     
     # set the destiny file to ~/.bash_profile or ~/.bashrc
     local file=~/.bash_profile
     test -e ~/.bashrc && file=~/.bashrc
 
     # print the alias syntax
-    echo "alias $1=\". prjk go $folder\"" >> $file
+    echo "alias $1=\". prjk go \\\"$folder\\\"\"" >> $file
     
     # 'update' the file to allow to use the alias 
     # immediately after the creation
@@ -33,12 +33,12 @@ _prjk_find() {
     # check if the number of arguments are 2
     if test $# -eq 2; then
         # make the filter (1.2.1)
-        _prjk_filter $1 $2
+        _prjk_filter "$1" $2
 
         # check if there is more than one result to show the options menu
         if test $TOTAL -gt 1; then
             # show the options menu (1.2.2)
-            _prjk_options $1
+            _prjk_options "$1"
         elif test $TOTAL -eq 1; then
             # if only one result, go to that folder (1.2.3)
             _prjk_cd "$1/${LIST[0]}"
@@ -52,7 +52,7 @@ _prjk_find() {
     else
         # if only call the alias, without second parameter, 
         # just go the destiny folder (1.2.3)
-        _prjk_cd $1
+        _prjk_cd "$1"
     fi
 }
 
@@ -62,10 +62,8 @@ _prjk_find() {
 #   FILTER THE SUB-FOLDERS
 
 _prjk_filter() {
-    # save IFS to an variable and set \n
-    # this is to keep folders with space
-    OLDIFS="$IFS"
-    IFS=$'\n'
+    # set \n to IFS for list folder with space correctly
+    local IFS=$'\n'
 
     # makes the filter listing only folders of,
     # destiny folder, applying egrep for the filter
@@ -80,6 +78,7 @@ _prjk_filter() {
 #   ENTER IN MENU MODE
 
 _prjk_options() {
+   echo $1 
     # enter in mode were echo is locked and the cursor
     # is hidden (fullscreen was the first name - 1.2.2.1)
     _prjk_fullscreen
@@ -199,7 +198,11 @@ _prjk_fullscreen() {
 
 _prjk_select() { 
     local n=0
+    local folder
 
+    # set \n to IFS for list folder with space correctly
+    local IFS=$'\n'
+    
     # loop the list
     for folder in ${LIST[@]}; do
         # check if selected (passed as argument) 
@@ -246,7 +249,7 @@ _prjk_leave() {
 _prjk_cd() {
     #unset the functions and variables to the current section (1.4)
     _prjk_unset
-
+    
     # make the "cd" command and print the output
     echo "cd $1"
     cd "$1" 
@@ -296,11 +299,6 @@ _prjk_unset() {
    
     unset LIST 
     unset TOTAL 
-    
-    if test -n "$OLDIFS"; then
-        IFS="$OLDIFS"
-        unset OLDIFS
-    fi
 }
 
 
@@ -315,9 +313,9 @@ _prjk_unset() {
 # verify if more then 0 arguments
 if test $# -gt 0; then
     case $1 in
-        create|alias) _prjk_alias $2 $3 ;; # 1.1
-        go|find) _prjk_find $2 $3 ;;       # 1.2
-        help) _prjk_help ;;                # 1.3
-        *) _prjk_unset ;;                  # 1.4
+        create|alias) _prjk_alias $2 "$3" ;; # 1.1
+        go|find) _prjk_find "$2" $3 ;;       # 1.2
+        help) _prjk_help ;;                  # 1.3
+        *) _prjk_unset ;;                    # 1.4
     esac
 fi 
